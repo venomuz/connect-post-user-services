@@ -12,47 +12,50 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//UserService ...
-type UserService struct {
+//PostService ...
+type PostService struct {
 	storage storage.IStorage
 	logger  l.Logger
 }
 
-//NewUserService ...
-func NewUserService(db *sqlx.DB, log l.Logger) *UserService {
-	return &UserService{
+//NewPostService ...
+func NewPostService(db *sqlx.DB, log l.Logger) *PostService {
+	return &PostService{
 		storage: storage.NewStoragePg(db),
 		logger:  log,
 	}
 }
 
-func (s *UserService) Create(ctx context.Context, req *pb.User) (*pb.User, error) {
+func (s *PostService) PostCreate(ctx context.Context, req *pb.Post) (*pb.OkBOOL, error) {
 	id1 := uuid.NewV4()
-	id2 := uuid.NewV4()
 	req.Id = id1.String()
-	req.Address.Id = id2.String()
-	user, err := s.storage.User().Create(req)
-	if err != nil {
-		s.logger.Error("Error while inserting user info", l.Error(err))
-		return nil, status.Error(codes.Internal, "Error insert user")
-	}
-	return user, err
-}
-func (s *UserService) GetByID(ctx context.Context, req *pb.GetIdFromUser) (*pb.User, error) {
-	user, err := s.storage.User().GetByID(req.Id)
-	if err != nil {
-		fmt.Println(err)
-		s.logger.Error("Error while getting user info", l.Error(err))
-		return nil, status.Error(codes.Internal, "Error insert user")
+	for _, media := range req.Medias {
+		id2 := uuid.NewV4()
+		media.Id = id2.String()
 	}
 
-	return user, err
-}
-func (s *UserService) DeleteByID(ctx context.Context, req *pb.GetIdFromUser) (*pb.GetIdFromUser, error) {
-	user, err := s.storage.User().DeleteByID(req.Id)
+	post, err := s.storage.Post().PostCreate(req)
 	if err != nil {
-		s.logger.Error("Error while getting user info", l.Error(err))
-		return nil, status.Error(codes.Internal, "Error insert user")
+		s.logger.Error("Error while inserting post info", l.Error(err))
+		return nil, status.Error(codes.Internal, "Error insert post")
 	}
-	return user, err
+	return post, err
+}
+func (s *PostService) PostGetByID(ctx context.Context, req *pb.GetIdFromUser) (*pb.Post, error) {
+	post, err := s.storage.Post().PostGetByID(req.Id)
+	if err != nil {
+		fmt.Println(err)
+		s.logger.Error("Error while getting post info", l.Error(err))
+		return nil, status.Error(codes.Internal, "Error insert post")
+	}
+
+	return post, err
+}
+func (s *PostService) PostDeleteByID(ctx context.Context, req *pb.GetIdFromUser) (*pb.OkBOOL, error) {
+	post, err := s.storage.Post().PostDeleteByID(req.Id)
+	if err != nil {
+		s.logger.Error("Error while getting post info", l.Error(err))
+		return nil, status.Error(codes.Internal, "Error insert post")
+	}
+	return post, err
 }

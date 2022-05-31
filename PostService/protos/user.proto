@@ -1,16 +1,15 @@
 syntax="proto3";
-package user;
+package post;
 
 service UserService{
   rpc Create(User) returns (User);
-  rpc GetByID(GetIdFromUser) returns (User);
-  rpc DeleteByID(GetIdFromUser) returns (GetIdFromUser);
+  rpc GetByID(GetIdFromId) returns (User);
+  rpc DeleteByID(GetIdFromId) returns (GetIdFromId);
 }
 
 message User{
   string id = 1;
-  string first_name = 2;
-  string last_name = 3;
+  string first_name = 2;  string last_name = 3;
   repeated string email = 4;
   string bio = 5;
   repeated string phone_number = 6;
@@ -27,6 +26,6 @@ message Address{
   string district = 5;
   int64 postal_code = 6;
 }
-message GetIdFromUser{
+message GetIdFromId{
   string id = 1;
 }
