@@ -6,6 +6,7 @@ import (
 	"github.com/venomuz/project3/UserService/pkg/db"
 	"github.com/venomuz/project3/UserService/pkg/logger"
 	"github.com/venomuz/project3/UserService/service"
+	grpcClient "github.com/venomuz/project3/UserService/service/grpc_client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"net"
@@ -26,8 +27,11 @@ func main() {
 	if err != nil {
 		log.Fatal("sqlx connection to postgres error", logger.Error(err))
 	}
-
-	userService := service.NewUserService(connDB, log)
+	grocC, err := grpcClient.New(cfg)
+	if err != nil {
+		log.Fatal("grpc connection to postservice error", logger.Error(err))
+	}
+	userService := service.NewUserService(connDB, log, grocC)
 
 	lis, err := net.Listen("tcp", cfg.RPCPort)
 	if err != nil {

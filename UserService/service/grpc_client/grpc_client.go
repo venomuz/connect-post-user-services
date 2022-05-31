@@ -1,23 +1,38 @@
 package grpcClient
 
 import (
+	"fmt"
 	"github.com/venomuz/project3/UserService/config"
+	pb "github.com/venomuz/project3/UserService/genproto"
+	"google.golang.org/grpc"
 )
 
 //GrpcClientI ...
 type GrpcClientI interface {
+	PostService() pb.PostServiceClient
 }
 
 //GrpcClient ...
 type GrpcClient struct {
 	cfg         config.Config
-	connections map[string]interface{}
+	postService pb.PostServiceClient
 }
 
 //New ...
 func New(cfg config.Config) (*GrpcClient, error) {
+	connPost, err := grpc.Dial(
+		fmt.Sprintf("%s:%d", cfg.PostServiceHost, cfg.PostServicePort),
+		grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("post service dial host: %s port: %d",
+			cfg.PostServiceHost, cfg.PostServicePort)
+	}
+
 	return &GrpcClient{
 		cfg:         cfg,
-		connections: map[string]interface{}{},
+		postService: pb.NewPostServiceClient(connPost),
 	}, nil
+}
+func (s *GrpcClient) PostService() pb.PostServiceClient {
+	return s.postService
 }

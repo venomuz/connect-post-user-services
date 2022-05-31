@@ -47,12 +47,12 @@ func (r *userRepo) GetByID(ID string) (*pb.User, error) {
 	user.Address = &addr
 	return &user, nil
 }
-func (r *userRepo) DeleteByID(ID string) (*pb.GetIdFromUser, error) {
+func (r *userRepo) DeleteByID(ID string) (*pb.GetIdFromUserID, error) {
 	_, err := r.db.Exec(`DELETE  FROM users WHERE id = $1`, ID)
 	if err != nil {
 		log.Panicf("%s\n%s", "Error while deleteing data from table users", err)
 	}
-	id := pb.GetIdFromUser{}
+	id := pb.GetIdFromUserID{}
 
 	return &id, nil
 }

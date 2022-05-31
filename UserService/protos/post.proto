@@ -1,5 +1,5 @@
 syntax="proto3";
-package post;
+package user;
 
 service PostService{
   rpc PostCreate(Post) returns (OkBOOL);

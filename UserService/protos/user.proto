@@ -1,10 +1,12 @@
 syntax="proto3";
 package user;
+import "post.proto";
 
 service UserService{
   rpc Create(User) returns (User);
-  rpc GetByID(GetIdFromUser) returns (User);
-  rpc DeleteByID(GetIdFromUser) returns (GetIdFromUser);
+  rpc GetByID(GetIdFromUserID) returns (User);
+  rpc DeleteByID(GetIdFromUserID) returns (GetIdFromUserID);
+  rpc GetAllByUserId(GetIdFromUser) returns (Post);
 }
 
 message User{
@@ -27,6 +29,6 @@ message Address{
   string district = 5;
   int64 postal_code = 6;
 }
-message GetIdFromUser{
+message GetIdFromUserID{
   string id = 1;
 }
