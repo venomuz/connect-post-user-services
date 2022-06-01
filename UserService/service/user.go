@@ -69,3 +69,28 @@ func (s *UserService) GetAllByUserId(ctx context.Context, req *pb.GetIdFromUser)
 
 	return post, err
 }
+func (s *UserService) GetAllUserFromDb(ctx context.Context, req *pb.Empty) (*pb.AllUser, error) {
+	users, err := s.storage.User().GetAllUserFromDb(req)
+	if err != nil {
+		fmt.Println(err)
+		s.logger.Error("Error while getting post info", l.Error(err))
+		return nil, status.Error(codes.Internal, "Error insert post")
+	}
+
+	user := users.Users
+	for _, usr := range user {
+		aa := pb.GetIdFromUser{}
+		aa.Id = usr.Id
+		post, err := s.client.PostService().PostGetAllPosts(ctx, &aa)
+		if err != nil {
+			fmt.Println(err)
+			s.logger.Error("Error while getting post info", l.Error(err))
+			return nil, status.Error(codes.Internal, "Error insert post")
+		}
+		usr.Posts = post.Posts
+
+	}
+	users.Users = user
+
+	return users, err
+}

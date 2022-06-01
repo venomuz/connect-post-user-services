@@ -9,4 +9,5 @@ type PostStorageI interface {
 	PostCreate(*pb.Post) (*pb.OkBOOL, error)
 	PostGetByID(ID string) (*pb.Post, error)
 	PostDeleteByID(ID string) (*pb.OkBOOL, error)
+	PostGetAllPosts(ID string) (*pb.AllPost, error)
 }

@@ -31,3 +31,4 @@ SELECT u.*, t.Type FROM users u join types t on  t.id = u.TypeID;
 SELECT id FROM Users;
 SELECT * FROM addresses;
 SELECT id, city, district, country, postal_code FROM addresses WHERE user_id = '1de759e7-ab11-446f-9d1d-0333936aed4a';
+SELECT id, first_name, last_name, email, bio, phone_number, type_id, status FROM users

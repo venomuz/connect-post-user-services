@@ -16,3 +16,4 @@ CREATE TABLE medias(
 );
 SELECT * FROM posts;
 SELECT * FROM medias;
+SELECT id,name,description FROM posts WHERE user_id = '042072bf-7a5f-40c4-82da-e1734165f8fb';

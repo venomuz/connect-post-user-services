@@ -1,12 +1,15 @@
 syntax="proto3";
-package post;
+package user;
 
 service PostService{
   rpc PostCreate(Post) returns (OkBOOL);
   rpc PostGetByID(GetIdFromUser) returns (Post);
   rpc PostDeleteByID(GetIdFromUser) returns (OkBOOL);
+  rpc PostGetAllPosts(GetIdFromUser) returns (AllPost);
 }
-
+message AllPost{
+  repeated Post Posts = 1;
+}
 message Post{
   string id = 1;
   string name = 2;

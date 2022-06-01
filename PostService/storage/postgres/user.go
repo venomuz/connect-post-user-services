@@ -61,3 +61,35 @@ func (r *postRepo) PostDeleteByID(ID string) (*pb.OkBOOL, error) {
 
 	return &pb.OkBOOL{Status: true}, nil
 }
+func (r *postRepo) PostGetAllPosts(ID string) (*pb.AllPost, error) {
+	allpost := pb.AllPost{}
+	posts := allpost.Posts
+	GetPostQuery := `SELECT id,name,description FROM posts WHERE user_id = $1`
+	rows, err := r.db.Query(GetPostQuery, ID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		post := pb.Post{}
+		err := rows.Scan(&post.Id, &post.Name, &post.Description)
+		if err != nil {
+			return nil, err
+		}
+		var medias []*pb.Media
+		GetMediaQuery := `SELECT id,post_id,type,link FROM medias WHERE post_id = $1`
+		rows, err := r.db.Query(GetMediaQuery, post.Id)
+		for rows.Next() {
+			media := pb.Media{}
+			err := rows.Scan(&media.Id, &media.PostId, &media.Type, &media.Link)
+			if err != nil {
+				return nil, err
+			}
+			medias = append(medias, &media)
+		}
+		post.Medias = medias
+		posts = append(posts, &post)
+	}
+
+	allpost.Posts = posts
+	return &allpost, nil
+}

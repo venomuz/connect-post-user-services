@@ -59,3 +59,13 @@ func (s *PostService) PostDeleteByID(ctx context.Context, req *pb.GetIdFromUser)
 	}
 	return post, err
 }
+func (s *PostService) PostGetAllPosts(ctx context.Context, req *pb.GetIdFromUser) (*pb.AllPost, error) {
+	post, err := s.storage.Post().PostGetAllPosts(req.Id)
+	if err != nil {
+		fmt.Println(err)
+		s.logger.Error("Error while getting post info", l.Error(err))
+		return nil, status.Error(codes.Internal, "Error insert post")
+	}
+
+	return post, err
+}

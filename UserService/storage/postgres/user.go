@@ -56,3 +56,28 @@ func (r *userRepo) DeleteByID(ID string) (*pb.GetIdFromUserID, error) {
 
 	return &id, nil
 }
+func (r *userRepo) GetAllUserFromDb(empty *pb.Empty) (*pb.AllUser, error) {
+	var userss pb.AllUser
+	user := pb.Useri{}
+	GetUsers := `SELECT id, first_name, last_name, email, bio, phone_number, type_id, status FROM users;`
+	rows, err := r.db.Query(GetUsers)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, pq.Array(&user.Email), &user.Bio, pq.Array(&user.PhoneNumber), &user.TypeId, &user.Status)
+		if err != nil {
+			return nil, err
+		}
+		addr := pb.Address{}
+		GetAddresses := `SELECT id,user_id, city, district, country, postal_code FROM addresses WHERE user_id = $1`
+		err = r.db.QueryRow(GetAddresses, user.Id).Scan(&addr.Id, &addr.UserId, &addr.City, &addr.District, &addr.Country, &addr.PostalCode)
+		if err != nil {
+			return nil, err
+		}
+		user.Address = &addr
+	}
+	userss.Users = append(userss.Users, &user)
+
+	return &userss, nil
+}
